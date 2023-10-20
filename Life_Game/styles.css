@@ -1,0 +1,34 @@
+div {
+    margin: 0 auto;
+    background-color: rgb(112, 141, 112);
+}
+div {
+    width: 25px;
+    height: 25px;
+}
+.start {
+    text-align: center;
+    width: 200px;
+    height: 50px;
+    background-color: rgb(139, 139, 179);
+}
+.clear {
+    text-align: center;
+    width: 200px;
+    height: 50px;
+    background-color: rgb(203, 27, 191);
+}
+.ingame {
+    text-align: center;
+    width: 200px;
+    height: 50px;
+    background-color: yellow;
+}
+table {
+    margin: 0 auto;
+    border-spacing: 0px;
+}
+.Taken {
+    background-color: greenyellow;
+}
+

@@ -1,0 +1,30 @@
+div {
+    margin: 0 auto;
+    background-color: rgb(112, 141, 112);
+}
+table {
+    margin: 0 auto;
+    border-spacing: 0px;
+}
+div {
+    width: 25px;
+    height: 25px;
+}
+.zmeika {
+    background-color: greenyellow;
+    z-index: 3;
+}
+/* .zmeika-golova {
+    background-color: rgb(140, 255, 0);
+} */
+.fruit {
+    background-color: red;
+    z-index: 2;
+}
+.scoreboard {
+    background-color: rgb(0, 231, 204);
+    width: 100px;
+    box-sizing: border-box;
+    justify-content: center;
+    padding-left: 10px;
+}

@@ -1,15 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
-import time
 import re
 import json
-from pathlib import Path
 user_agent = {'User-agent': 'Mozilla/7.0'} #сайт думает что запрос от юзера а не от бота
-def get_and_verify_url(url=r'https://www.dotabuff.com/players/86025447/matches'): #https://www.dotabuff.com/players/86025447/matches = valid, https://www.dotabuff.com/players/543/matches = invalid
-    #url = r'https://www.dotabuff.com/players/86025447/matches'
+def get_and_verify_url(url): 
     regx = re.compile(r'(?:https:\/\/)?(?:www\.)?dotabuff\.com\/players\/(\d+)(?:\/matches)?')
     res = re.match(regx, url)
-    #return f"https://www.dotabuff.com/players/{res.group(1)}/matches"
     try:
         fixed_url = f"https://www.dotabuff.com/players/{res.group(1)}/matches"
     except:
@@ -22,7 +18,6 @@ def get_and_verify_url(url=r'https://www.dotabuff.com/players/86025447/matches')
         return (-1, throw_error('Invalid link'))
     else:
         return (0, soup)
-    #print(res.group(1))
 def throw_error(stroka):
     return f"The error has occured: {stroka}"
 def format_the_string(stroka):
@@ -87,14 +82,7 @@ def match_info(arr_of_str):
     link, character, rank, WorL, duration, KDA, normranked, regime = arr_of_str
     #'link', 'Lion', 'Immortal', 'Won Match', '27:18', '5/3/14', 'Ranked', 'All Pick'
     return f"<b>{character}</b>\n{WorL} {KDA} <i>{duration}</i> \n{normranked} {regime} <b>{rank}</b> \n<u>{link}</u>"
-    #LION KDA WON MATCH
-    #RANKED ALLPICK 27:18 IMMORTAL
-    #link
 if __name__ == '__main__':
-    #print(Path.cwd())
-    #Soupp = get_and_verify_url()
     arr = get_matches(get_and_verify_url())
-    #print(match_info(arr[0]))
     for elem in arr:
         print(elem)
-#time.sleep(1)

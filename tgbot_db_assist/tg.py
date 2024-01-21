@@ -3,17 +3,14 @@ from telegram import Update
 import telegram
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters, Updater
 from scrapper import get_and_verify_url, save_data, load_data, get_matches, match_info
-import asyncio
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
 TOKEN = '6905597866:AAH5v-KrpPZQ0tWxlSt0dqvouwvcf2fjoM0'
-#u = Updater(TOKEN, use_context=True)
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=update.effective_chat.id, text="Hi, I am a dotabuff assist bot. Please send your dotabuff link using /set_link <link>.")
-    #await context.bot.send_message(chat_id=update.effective_chat.id, text='<b>bold</b>\n<strong>bold</strong>', parse_mode='HTML')
 async def set_link(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     dicti = load_data('saved_dbs.json')
     try:
@@ -35,10 +32,6 @@ async def set_link(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text(f"{err_msg}")
 async def update_matches(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_ID = str(context._user_id)
-    # dicti = load_data('saved_dbs.json')
-    # if user_ID not in dicti['subs']:
-    #     dicti['subs'].append(user_ID)
-    # save_data('saved_dbs.json', dicti)
     current_jobs = context.job_queue.get_jobs_by_name(str(user_ID))
     if current_jobs:
         await update.message.reply_text(f"You already receive updates on your matches.")
@@ -57,17 +50,8 @@ async def stop_update_matches(update: Update, context: ContextTypes.DEFAULT_TYPE
     for job in current_jobs:
         job.schedule_removal()
     await update.message.reply_text(f"New match updates are disabled.")
-    # dicti = load_data('saved_dbs.json')
-    # if user_ID in dicti['subs']:
-    #     dicti['subs'].remove(user_ID)
-    # save_data('saved_dbs.json', dicti)
-    #await update.message.reply_text(f"Stopped updating.")
 async def callback_minute(context: telegram.ext.CallbackContext):
     dicti = load_data('saved_dbs.json')
-    # for elem in dicti['subs']:
-    #     user_ID = elem
-    #user_ID = str(context._user_id)
-    #print(f"                 user_ID = {user_ID}   ")
     user_ID = str(context._user_id)
     try:                         
         db_link = dicti['tg_id'][user_ID][0]
@@ -118,7 +102,6 @@ def find_most_recent(arr_of_str, last_match):
         return arr_of_str
     while arr_of_str and arr_of_str[-1][0] != last_match:
         arr_of_str.pop()
-    #print(arr_of_str)
     if arr_of_str:
         arr_of_str.pop()
     return arr_of_str
@@ -131,7 +114,6 @@ if __name__ == '__main__':
     update_matches_handler = CommandHandler('update_matches', update_matches)
     stop_update_matches_handler = CommandHandler('stop_update', stop_update_matches)
     status_handler = CommandHandler('status', status)
-    #job_minute = j.run_repeating(callback_minute, interval=60, first=10)
     application.add_handler(start_handler)
     application.add_handler(set_link_handler)
     application.add_handler(update_matches_handler)

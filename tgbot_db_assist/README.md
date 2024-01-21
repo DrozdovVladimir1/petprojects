@@ -1,5 +1,5 @@
 # ![db](https://github.com/DrozdovVladimir1/petprojects/assets/113205862/42eca3e9-b69d-4cd0-9951-d1d83cb73c04) DB_assist бот - это
-Телеграм бот, который автоматически собирает (парсит) и присылает информацию по последним матчам
+[Телеграм бот](https://t.me/db_assist_bot), который автоматически собирает (парсит) и присылает информацию по последним матчам
 ## Используемые технологии
 + [My Beautiful Soup 4](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 + [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot)

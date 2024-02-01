@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+    <style>
+        .centering {
+            text-align: center
+        }
+        .ib {
+            display: inline-block;
+            border: 1px solid rgb(6, 6, 6);
+        }
+    </style>
+    <body onload="pageReady()">
+        <h1 class="centering">Dashboard</h1>
+        <br>
+        <div class="centering">
+            <canvas class="centering" id="fullCanvas" width="800" height="200" style="border:1px solid #000000; scroll-behavior: auto">
+            </canvas>
+        </div>
+        <br>
+        <!-- <div onready="makeCloud(observable)"> -->
+        <div>
+            <div id="global_counter" class="centering">
+                Global Counter: 0
+            </div>
+            <br>
+            <div class="ib">
+                <img id="img1" class="centering" width="200" height="200"></img>
+                <div id="counter_cam1" class="centering">
+                    Last counter for camera 1: 0
+                </div>
+            </div>
+            <div class="ib">
+                <img id="img2" class="centering" width="200" height="200"></img>
+                <div id="counter_cam2" class="centering">
+                    Last counter for camera 2: 0
+                </div>
+            </div>
+            <div class="ib">
+                <img id="img3" class="centering" width="200" height="200"></img>
+                <div id="counter_cam3" class="centering">
+                    Last counter for camera 3: 0
+                </div>
+            </div>
+            <div class="ib">
+                <img id="img4" class="centering" width="200" height="200"></img>
+                <div id="counter_cam4" class="centering">
+                    Last counter for camera 4: 0
+                </div>
+            </div>
+            <div class="ib">
+                <img id="img5" class="centering" width="200" height="200"></img>
+                <div id="counter_cam5" class="centering">
+                    Last counter for camera 5: 0
+                </div>
+            </div>
+            <div class="ib">
+                <img id="img6" class="centering" width="200" height="200"></img>
+                <div id="counter_cam6" class="centering">
+                    Last counter for camera 6: 0
+                </div>
+            </div>
+            <div class="ib">
+                <img id="img7" class="centering" width="200" height="200"></img>
+                <div id="counter_cam7" class="centering">
+                    Last counter for camera 7: 0
+                </div>
+            </div>
+            <div class="ib">
+                <img id="img8" class="centering" width="200" height="200"></img>
+                <div id="counter_cam8" class="centering">
+                    Last counter for camera 8: 0
+                </div>
+            </div>
+            <div class="ib">
+                <img id="img9" class="centering" width="200" height="200"></img>
+                <div id="counter_cam9" class="centering">
+                    Last counter for camera 9: 0
+                </div>
+            </div>
+            <div class="ib">
+                <img id="img10" class="centering" width="200" height="200"></img>
+                <div id="counter_cam10" class="centering">
+                    Last counter for camera 10: 0
+                </div>
+            </div>
+        </div>
+    </body>
+    <head>
+        <title>Dashboard</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.3.2/rxjs.umd.js"></script>
+
+        <script>
+        const { Observable, Subject, ReplaySubject, from, of, range, fromEvent } =
+            rxjs;
+        const { map, filter, switchMap, scan, groupBy, mergeMap } = rxjs.operators;
+        const fullCanvas = document.getElementById('fullCanvas');
+        var html_counter = document.getElementById('global_counter');
+        const context = fullCanvas.getContext('2d');
+        const barWidth = fullCanvas.clientWidth / 20;
+
+
+        function set_camera_counters(value, base64img, camera_id) {
+            let cam = document.getElementById(`counter_cam${camera_id}`)
+            let img = document.getElementById(`img${camera_id}`)
+            try {
+                if (base64img != null) {
+                    img.setAttribute('src', "data:image/jpg;base64," + base64img);
+                    console.log("IMAGE");
+                }
+                if (value != null) {
+                    cam.innerHTML = `Last counter for camera ${camera_id}: ` + value.toString();
+                    console.log("VAL");
+                }
+            }
+            catch (e) {
+                console.log(`Error, value = ${value} base64img IS  ${typeof (base64img)} for camera ${camera_id}`)
+            }
+        }
+
+
+        const socket = io("http://localhost:4400", {
+            maxHttpBufferSize: 1e8
+        });
+        socket.on("connect", () => {
+            console.log('connect in client.html');
+        });
+
+        socket.on("increase_counter", (data) => {
+            console.log("Got counter");
+            let curr_counter = parseInt(html_counter.innerHTML.split(': ')[1]);
+            let to_change = curr_counter + data['counter'];
+            html_counter.innerHTML = "Global Counter: " + to_change.toString();
+            set_camera_counters(data['counter'], data['image'], data['camera_id']);
+        });
+        socket.on("disconnect", () => {
+            console.log("Disconnect in client.html");
+        });
+        socket.on("connect_error", (err) => {
+            console.log(`connect_error due to ${err.message} in client.html`);
+        });
+        socket.on('error', function (err) {
+            console.log(`error due to ${err.message} in client.html`);
+        });
+
+        function nextPos(x) {
+            return x + barWidth + 5;
+        }
+
+        function drawBar(heigth, xPos, color) {
+            context.fillStyle = color;
+            context.fillRect(xPos, fullCanvas.clientHeight - heigth, barWidth, heigth);
+            return xPos;
+        }
+        let initialPos = 0;
+        function loadCounters() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', "http://localhost:4400/counters");
+
+            xhr.onreadystatechange = (status) => {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    const data = JSON.parse(xhr.responseText);
+                    initialPos = drawBar(data.counter * 2, nextPos(initialPos, barWidth), "green", context, barWidth);
+                }
+            }
+            xhr.send();
+        }
+
+        function loadAndDisplayCounters() {
+            setInterval(() => {
+                loadCounters();
+            }, 30000);
+        }
+
+        function pageReady() {
+            loadAndDisplayCounters();
+        }
+        </script>
+    </head>
+</html>
